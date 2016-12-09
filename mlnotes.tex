@@ -1,0 +1,79 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\newcommand{\defeq}{\ensuremath\stackrel{\text{\tiny def}}{=}}
+\title{Machine Learning Notes}
+\author{R. Sudarshan}
+\date{\today}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+This is an evolving set of notes kept for my understanding of machine
+learning algorithms.
+
+\section{Vector calculus primer}
+A lot of machine learning algorithms work on minimizing an objective
+function $f: \mathbb{R}^{N}\rightarrow\mathbb{R}$. Typically, these
+are done using algorithms like \textit{gradient descent} or
+\textit{L-BFGS}. To understand machine learning algorithms, it is
+therefore crucial to understand what gradients and Hessians are and
+how they are computed.
+
+
+So what exactly is the gradient of a function anyway? Given a function $f:\mathbb{R}^N\rightarrow\mathbb{R}$, we define
+\[
+\nabla{f}(w):\mathbb{R}\to\mathbb{R}^N \defeq \begin{bmatrix}\
+  \frac{\partial{f}}{\partial{w_1}} \\
+  \frac{\partial{f}}{\partial{w_2}} \\
+  \vdots \\
+  \frac{\partial{f}}{\partial{w_{N}}} \\
+  \end{bmatrix}
+\]
+where in turn
+\[
+\frac{\partial{f}}{\partial{w_i}} = \lim_{h\to0}\frac{f(w+h\hat{e}_i) - f(w)}{h}
+\]
+and $\hat{e}_i$ is the unit-vector in the $i$-th dimension.
+
+Gradients are really useful (at least in a optimization/machine
+learning setting) when used in conjunction with the Taylor series
+approximation for $f$ that I'm already comfortable with from 6.336. We have:
+\[
+f(w + \varepsilon) = f(w) + \varepsilon^{\mathsf{T}} \nabla{f}(w) + \text{h.o.t}
+\]
+Note that $\varepsilon \in \mathbb{R}^N$ is an ``epsilon''
+displacement of $w$ in $N$-dimensional space. So as a first-order
+approximation:
+\[
+\varepsilon^{\mathsf{T}}\nabla{f}(w) \approx f(w+\varepsilon) - f(w)
+\]
+
+\subsection{Gradient descent}
+For a function $f:\mathbb{R}\to\mathbb{R}$, we know $f(w')$ is a
+(local) maximum or minimum if
+$\frac{\text{d}f}{\text{d}w}_{w'}=0$. But what about for functions
+that are $\mathbb{R}^N\to\mathbb{R}$? We require the partial
+derivative along \textit{each} axis $i = 1,2,\ldots,N$ to be zero, or in other words:
+\[
+\left.\nabla{f}\right|_{w'} = 0
+\]
+
+
+
+\section{Linear regression}
+\subsection{Gradients for linear regression}
+
+\section{Perceptron learning}
+
+\section{Logistic regression}
+
+\subsection{Multi-class logistic regression}
+
+\subsection{Equalivalence between sigmoid and softmax loss functions}
+
+\section{Support vector machines}
+\subsection{Online algorithms via PEGASOS}
+\end{document}
