@@ -2,6 +2,7 @@
 \usepackage{fullpage}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{tikz}
 \newcommand{\defeq}{\ensuremath\stackrel{\text{\tiny def}}{=}}
 \title{Machine Learning Notes}
 \author{R. Sudarshan}
@@ -61,7 +62,24 @@ derivative along \textit{each} axis $i = 1,2,\ldots,N$ to be zero, or in other w
 \left.\nabla{f}\right|_{w'} = 0
 \]
 
+The \textit{gradient descent} algorithm is an iterative approach to
+minimizing or maximizing $f$. Starting from a random guess, it tries
+to find a point $w_{\text{opt}}$ such that
+$\nabla{f}|_{w_{\text{opt}}} = 0$ by moving \textit{one step} in a
+line that's in the opposite direction to the gradient at the current
+guess, see the figure below:
 
+\begin{figure}[htbp]
+  \begin{center}
+    \input{gradient-descent.tex}
+  \end{center}
+  \caption{One step of gradient descent algorithm.}
+\end{figure}
+
+One update of the algorithm can be written as:
+\[
+w_{n+1} = w_{n} - \left.\nabla{f}\right|_{w_n}
+\]
 
 \section{Linear regression}
 \subsection{Gradients for linear regression}
