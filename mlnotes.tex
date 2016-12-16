@@ -3,7 +3,12 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{tikz}
+\usepackage{algorithm2e}
+\usepackage{bm}
+\setlength{\parindent}{0pt}
 \newcommand{\defeq}{\ensuremath\stackrel{\text{\tiny def}}{=}}
+\newcommand{\trans}[1]{\ensuremath{#1}^{\mathsf{T}}}
+\DeclareMathOperator*{\argmin}{arg\,min} % thin space, limits underneath in displays
 \title{Machine Learning Notes}
 \author{R. Sudarshan}
 \date{\today}
@@ -76,22 +81,101 @@ guess, see the figure below:
   \caption{One step of gradient descent algorithm.}
 \end{figure}
 
-One update of the algorithm can be written as:
-\[
-w_{n+1} = w_{n} - \left.\nabla{f}\right|_{w_n}
-\]
+The algorithm be written in pseudo-code as:
+
+\begin{algorithm}[H]
+  $w_0 \longleftarrow \texttt{rand}(N,1)$\;
+  \While{not converged} {
+    $w_{n+1} = w_{n} - \left.\nabla{f}\right|_{w_n}$\;
+  }
+\end{algorithm}
 
 \section{Linear regression}
+
+In linear regression, we are given a set of features or observations
+$\mathbf{A} \in \mathbb{R}^{M\times N}$ along with a set of labels
+$y\in \mathbb{R}^M$. We are then required to compute a set of weights
+$w\in\mathbb{R}^N$ such that:
+\[
+w = \argmin_{u \in \mathbb{R}^M} \left\|\mathbf{A} u - y\right\|^2_2
+\]
+
+\subsection{Interlude into link functions and loss functions}
+
+Given an observation $X \in \mathbb{R}^N$, the \textit{prediction} of
+the model $\hat{y}$ can be obtained as:
+\[
+\hat{y} = f_{\text{Link}}\left(X^{\mathsf{T}}\ w\right)
+\]
+Here, $f_{\text{Link}}:\mathbb{R}\to\mathbb{R}$ is known as the
+\textit{link function}. For linear regression, the link function is
+just the identity, $f(x) = x$ but for logistic regression, the link function is the \textit{sigmoid}:
+\[
+\sigma(x) = \frac{1}{1 + e^{-x}}
+\]
+
+To compute the weights $w$, we are minimizing an objective function, referred to as the \textit{loss function} in literature:
+\[
+f_{\text{Loss}} = \sum\limits_{i=1}^{M} \left(\mathbf{A}[i,:]^{\mathsf{T}}\ u - y[i]\right)^2 = \left\|\mathbf{A} u - y\right\|^2_2
+\]
+
+So to summarize, the link function is used to generate predictions
+$\hat{y}$ given a model whereas a loss function is actually used to
+generate the parameters for the model (in the case of linear
+regression, the weights $w$) given a training dataset.
+
 \subsection{Gradients for linear regression}
+
+So how exactly do you compute the weights for linear regression using
+gradient descent? Obviously, we start by computing the gradient of the loss function:
+\begin{equation}
+  \label{eq:linreg}
+  f(u) = \left\|\mathbf{A} u - y\right\|^2_2
+\end{equation}
+
+In many books such as ESL, the formula for the gradient is just
+provided without any explanation. In others, the derivation is
+unfortunately somewhat unclear. I want to provide what I hope is a
+clear exposition from first principles.
+
+Recall that the $i$-th component of the gradient is given by:
+\[
+(\nabla f(u))_i = \hat{e}^{\mathsf{T}}_i \nabla f(u) = \lim_{h\to0}\frac{f(u+h\hat{e}_i) - f(u)}{h}
+\]
+So we first compute $f(u+\varepsilon) - f(u)$ for some vector
+$\varepsilon$ and set $\varepsilon$ to $h\hat{e}_i$ for
+$i=1,2,\ldots,N$ to determine the gradient. We therefore have for the loss function \eqref{eq:linreg}:
+\[
+\begin{aligned}
+  f(u + \varepsilon) - f(u) &=  \left\|\mathbf{A} (u + \varepsilon) - y\right\|^2_2 - \left\|\mathbf{A} u - y\right\|^2_2\\
+  &= \left(\mathbf{A} (u + \varepsilon) - y\right)^{\mathsf{T}} \left(\mathbf{A} (u + \varepsilon) - y\right) - \left(\mathbf{A} u - y\right)^{\mathsf{T}}  \left(\mathbf{A} u - y\right) \\
+  &= \left\{\left(\trans{(u+\varepsilon)}\trans{\mathbf{A}}-\trans{y}\right)\left(\mathbf{A}(u+\varepsilon)-y\right)\right\} - \left\{\left(\trans{u}\trans{\mathbf{A}}-\trans{y}\right)\left(\mathbf{A}u - y\right)\right\} \\
+  &= \trans{\varepsilon}\mathbf{A}\varepsilon + 2\trans{\varepsilon}\trans{\mathbf{A}}\mathbf{A}u - 2\trans{\varepsilon}\mathbf{A}y \\
+\end{aligned}
+\]
+Substituting $\varepsilon = h\hat{e}_i$ we get
+\[
+\frac{f(u+h\hat{e}_i)-f(u)}{h} = h\trans{\hat{e_i}}\trans{\mathbf{A}}\mathbf{A}\hat{e}_i + 2 \trans{\hat{e}_i}\left(\trans{\mathbf{A}}\mathbf{A}u - \mathbf{A}y\right)
+\]
+and therefore in the limit as $h\to0$:
+\[
+\trans{\hat{e}_i}\nabla{f}(u) = \trans{\hat{e}_i}\trans{\mathbf{A}}\left(\mathbf{A}u - y\right),\ i=1,2,\ldots, N
+\]
+or in other words
+\begin{equation}
+\nabla{f}(u) = \trans{\mathbf{A}}\left(\mathbf{A}u - y\right)
+\end{equation}
 
 \section{Perceptron learning}
 
 \section{Logistic regression}
+\subsection{Derivative of the sigmoid function}
 
 \subsection{Multi-class logistic regression}
 
-\subsection{Equalivalence between sigmoid and softmax loss functions}
-
+\subsection{Equivalence between sigmoid and softmax loss functions}
 \section{Support vector machines}
 \subsection{Online algorithms via PEGASOS}
+\section{Evaluation}
+\subsection{RoC curves and area under the curve}
 \end{document}
